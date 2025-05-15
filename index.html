@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lista de Tarefas</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Handlee&display=swap">
+</head>
+<body>
+  <h1>Lista de Tarefas</h1>
+
+  <div class="input-container">
+    <div class="punch-hole"></div>
+    <div class="punch-hole"></div>
+    <div class="punch-hole"></div>
+    
+    <input type="text" id="title" placeholder="Título da tarefa">
+    <input type="text" id="description" placeholder="Descrição...">
+    <button onclick="AddTask()">Adicionar Tarefa</button>
+  </div>
+
+  <ul id="TaskList">
+    <div class="punch-hole"></div>
+    <div class="punch-hole"></div>
+    <div class="punch-hole"></div>
+  </ul>
+
+  <script type="module" src="js/app.js"></script>
+  <script type="module">
+    import { Task } from "./js/class.js";
+    
+
+    window.RenderTasks = function() {
+      const list = document.getElementById("TaskList");
+      list.innerHTML = "";
+      
+      const hole1 = document.createElement("div");
+      hole1.className = "punch-hole";
+      hole1.style.top = "10%";
+      
+      const hole2 = document.createElement("div");
+      hole2.className = "punch-hole";
+      hole2.style.top = "50%";
+      
+      const hole3 = document.createElement("div");
+      hole3.className = "punch-hole";
+      hole3.style.top = "90%";
+      
+      list.appendChild(hole1);
+      list.appendChild(hole2);
+      list.appendChild(hole3);
+
+      const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+      tasks.forEach((task, index) => {
+        const li = document.createElement("li");
+        
+        if (task.completed) {
+          li.classList.add("completed");
+        }
+        
+        li.textContent = `${task.title}: ${task.description}`;
+        
+        const deleteBtn = document.createElement("button");
+        deleteBtn.innerHTML = "×";
+        deleteBtn.className = "delete-btn";
+        deleteBtn.onclick = function(e) { 
+          e.stopPropagation();
+          DeleteTask(index); 
+        };
+        
+        li.onclick = function() {
+          ToggleTaskComplete(index);
+        };
+        
+        li.appendChild(deleteBtn);
+        list.appendChild(li);
+      });
+    }
+
+    window.DeleteTask = function(index) {
+      const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+      tasks.splice(index, 1);
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+      window.RenderTasks();
+    }
+    
+    window.ToggleTaskComplete = function(index) {
+      const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+      tasks[index].completed = !tasks[index].completed;
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+      window.RenderTasks();
+    }
+
+    window.onload = window.RenderTasks;
+  </script>
+</body>
+</html>
